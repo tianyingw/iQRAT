@@ -19,7 +19,9 @@ Usage
 
 ``` r
 library(iQRAT)
-iQRAT(Y, X, C) #Y is trait, X is genotype in a region, e.g., a gene, and C is covriates such as gender, race, etc.
+
+#Y is trait, X is genotype in a region, e.g., a gene, and C is covriates such as gender, race, etc.
+iQRAT(Y, X, C) 
 ```
 
 License
