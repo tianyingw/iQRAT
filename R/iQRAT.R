@@ -21,7 +21,8 @@
 #' @import quantreg stats
 #'
 #' @section References:
-#' Wang, T., Ionita-Laza, I. and Wei, Y. Integrated Quantile RAnk Test (iQRAT) for gene-level associations in sequencing studies.
+#' Wang, T., Ionita-Laza, I. and Wei, Y. Integrated Quantile RAnk Test (iQRAT) for gene-level associations.
+#' Seunggeun Lee and with contributions from Larisa Miropolsky and Michael Wu.(2017) SKAT: SNP-Set (Sequence) Kernel Association Test.
 #'
 #' @example man/examples/iQRAT_eg.R
 #' @export
