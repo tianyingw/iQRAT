@@ -19,6 +19,9 @@ Usage
 Suppose you have a sample dataset stored in a list with Y = SampleData$y, covriates C = SampleData$c, genetic data X = SampleData$x.
 
 ``` r
+library(quantreg)
+library(SKAT)
+
 # Step 1: fit null model
 null.fit = Null_model(Y = SampleData$y, C = SampleData$c)
 # Step 2: run the test, p value will return
