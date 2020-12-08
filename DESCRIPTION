@@ -1,7 +1,7 @@
 Package: iQRAT
 Type: Package
 Title: Integrated Quantile RAnk Test
-Version: 0.1.0
+Version: 5.0
 Author: Tianying Wang
 Maintainer: Tianying Wang <tw2696@cumc.columbia.edu>
 Description: This package provides tools for testing heterogeneous group-wise association via quantile rank test.
