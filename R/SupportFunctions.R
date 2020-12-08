@@ -1,105 +1,44 @@
 
-
-QS_Common <- function(null_Sn_0_c, null_Sn_1_c, null_Sn_2_c, Xstar_c){
+QS_Single <- function(null_Sn, Xstar, method.p = "davies", acc =1e-9){
   #### Common set
-  QSKAT_W = sum((null_Sn_0_c)^2)
-  QSKAT_L = sum((null_Sn_1_c)^2)
-  QSKAT_N = sum((null_Sn_2_c)^2)
-
-
-  Q.test = c(QSKAT_W, QSKAT_L, QSKAT_N)
-  CovS = crossprod(Xstar_c)
-  pval_S_c = Liu.pval(CovS, Q.test)
-
-  #### Cauchy test
-  CT_S_c = mean(tan((0.5-pval_S_c[1:2])*pi))
-  pval_S_CT2_c = pcauchy(CT_S_c, lower.tail = FALSE)
-  CT_S_c = mean(tan((0.5-pval_S_c)*pi))
-  pval_S_CT3_c = pcauchy(CT_S_c, lower.tail = FALSE)
-
-  return(list(pval_S_CT3_c = pval_S_CT3_c, pval_S_CT2_c = pval_S_CT2_c))
-
+  Q.test = sum((null_Sn)^2)
+  CovS = crossprod(Xstar)
+  if(method.p == "liu"){
+    pval_S_c = Liu.pval(CovS, Q.test)
+  }
+  if(method.p == "davies"){
+    pval_S_c = davies.pval(CovS, Q.test, acc =acc)
+  }
+  
+  
+  return( pval_S_c)
+  
 }
 
 
 
-QS_Rare <- function( null_Sn_0_r, null_Sn_2_r,  Xstar_r){
-  #### Rare Set
-  QSKAT_W = sum((null_Sn_0_r)^2)
-  QSKAT_N = sum((null_Sn_2_r)^2)
-
-
-  Q.test = c(QSKAT_W, QSKAT_N)
-  CovS = crossprod(Xstar_r)
-  pval_S_r = Liu.pval(CovS, Q.test)
-  pval_S_CT2_r = pval_S_r[1]
-  #### Cauchy test
-  CT_S_r = mean(tan((0.5-pval_S_r)*pi))
-  pval_S_CT3_r = pcauchy(CT_S_r, lower.tail = FALSE)
-
-
-
-  return(list(pval_S_CT3_r = pval_S_CT3_r, pval_S_CT2_r =pval_S_CT2_r ))
-}
-
-
-
-
-QB_Common <- function(null_Sn_0_c, null_Sn_1_c, null_Sn_2_c,  Xstar_c, ind_common){
+QB_Single <- function(null_Sn,  Xstar, ind1, method.p = "davies", acc =1e-9){
   ### Commmon
-  QB_W = (sum(null_Sn_0_c))^2
-  QB_L = (sum(null_Sn_1_c))^2
-  QB_N = (sum(null_Sn_2_c))^2
-
-  Q.test = c(QB_W, QB_L, QB_N)
-  CovS = crossprod(Xstar_c%*%rep(1, length(ind_common)))
-  pval_B_c = Liu.pval(CovS, Q.test)
-
-  CT_B_c = mean(tan((0.5-pval_B_c[1:2])*pi))
-  pval_B_CT2_c = pcauchy(CT_B_c, lower.tail = FALSE)
-  CT_B_c = mean(tan((0.5-pval_B_c)*pi))
-  pval_B_CT3_c = pcauchy(CT_B_c, lower.tail = FALSE)
-
-  return(list(pval_B_CT3_c = pval_B_CT3_c, pval_B_CT2_c = pval_B_CT2_c))
+  Q.test = (sum(null_Sn ))^2
+  
+  if(length(ind1) ==1){
+    Xstar = matrix(Xstar, nrow=length(Xstar), ncol = 1)
+  }
+  CovS = crossprod(Xstar%*%rep(1, length(ind1)))
+  
+  if(method.p == "liu"){
+    pval_B = Liu.pval(CovS, Q.test)
+  }
+  if(method.p == "davies"){
+    pval_B = davies.pval(CovS, Q.test)
+  }
+  
+  return(pval_B)
 }
 
 
 
-QB_Rare <- function(null_Sn_0_r, null_Sn_2_r,  Xstar_r, ind_rare){
-
-  QB_W = (sum(null_Sn_0_r))^2
-  QB_N = (sum(null_Sn_2_r))^2
-
-
-  Q.test = c(QB_W,QB_N)
-  CovS = crossprod(Xstar_r%*%rep(1, length(ind_rare)))
-  pval_B_r = Liu.pval(CovS, Q.test)
-  pval_B_CT2_r = pval_B_r[1]
-  ### Cauchy test
-  CT_B_r = mean(tan((0.5-pval_B_r)*pi))
-  pval_B_CT3_r = pcauchy(CT_B_r, lower.tail = FALSE)
-
-  return(list(pval_B_CT3_r = pval_B_CT3_r, pval_B_CT2_r = pval_B_CT2_r))
-}
-
-
-
-Q_Combine <- function(out_c, out_r){
- out_c = as.numeric(out_c)
- out_r = as.numeric(out_r)
-
-  ###### Combine p values
-
-
-  Fisher_S = -2*log(out_c[2]) - 2*log(out_r[2])
-  pval_S2 = pchisq(Fisher_S, df = 4, lower.tail = FALSE)
-
-  Fisher_S = -2*log(out_c[1]) - 2*log(out_r[1])
-  pval_S3 = pchisq(Fisher_S, df = 4, lower.tail = FALSE)
-
-  return(list(pval3 = pval_S3, pval2 = pval_S2))
-}
-
+##################################################
 Liu.pval <- function(CovS, Q.all){
     A1<-CovS
     A2<-A1 %*% A1
@@ -148,9 +87,10 @@ Get_Liu_Params_Mod<-function(c1){
     return(re)
 }
 
+#' Generate a simulation sample
+#' @export
 
-
-GenerateSample <- function(hp, temp_list, temp_list2, pnum, local, error_id, Standardize = TRUE){
+GenerateSample <- function(hp, temp_list, temp_list2, pnum, local, error_id, Standardize = TRUE, local.tau = NULL){
 
 
     n = length(temp_list$x_index)/2
@@ -160,8 +100,14 @@ GenerateSample <- function(hp, temp_list, temp_list2, pnum, local, error_id, Sta
 
     if(local == TRUE){
         u=seq(0,1,length=50)
-        betax=function(u, u0) pmax( 0, 5*(u-u0)/(1-u0))
-        uu = runif(n); slopex = betax(uu,u0=0.7)
+        if(local.tau < 0.5){
+          betax=function(u, u0) pmin( 0, 5*(u-u0)/(u0))
+        }else{
+          betax=function(u, u0) pmax( 0, 5*(u-u0)/(1-u0))
+        }
+        
+        uu = runif(n)
+        slopex = betax(uu,u0=local.tau)
 
 
         if(error_id == 1){
@@ -179,7 +125,7 @@ GenerateSample <- function(hp, temp_list, temp_list2, pnum, local, error_id, Sta
         if(error_id == 5){
             error = qt(uu, 3)
         }
-        y_a=1+1.2*temp_list2$C+(x%*%temp_list$beta)*slopex+error
+        y_a=1+1.2*temp_list2$C+x%*%temp_list$beta*slopex+error
         y_0=1+1.2*temp_list2$C+error
 
 
@@ -199,4 +145,52 @@ GenerateSample <- function(hp, temp_list, temp_list2, pnum, local, error_id, Sta
 
 }
 
+
+
+###############################
+# The following two functions related to davies method are from SKAT package
+# Reference: @Manual{SKATr,
+# title = {SKAT: SNP-Set (Sequence) Kernel Association Test},
+# author = {Seunggeun Lee and with contributions from Larisa Miropolsky and Michael Wu},
+# year = {2017},
+# note = {R package version 1.3.2.1},
+# url = {https://CRAN.R-project.org/package=SKAT},
+# }
+###############################
+davies.pval <- function(CovS, QSKAT, acc =1e-9){
+  eig1 = eigen(CovS)$values
+  acc1 = acc
+  temp_davies = Get_PValue.Lambda(eig1, QSKAT)
+  return(pval_davies = temp_davies$p.value)
+}
+davies.pval2 <- function(CovS, QSKAT, acc =1e-9){
+  eig1 = eigen(CovS)$values
+  eta = eig1[which(eig1 > 1e-05)]
+  eta1 = eta[which(eta > mean(eta)/1e5)]
+  acc1 = acc
+  temp_davies = SKAT_davies(QSKAT, eta1, acc = acc1)
+  while(temp_davies$ifault == 1){
+    acc1 = acc1*10
+    warning(paste0("use accuracy ", acc1))
+    temp_davies = SKAT_davies(QSKAT, eta1, acc = acc1)
+  }
+  
+  pval_davies = max(temp_davies$Qq,0)
+  return(pval_davies)
+}
+
+
+SKAT_davies <- function(q,lambda,h = rep(1,length(lambda)),delta = rep(0,length(lambda)),sigma=0,lim=1e6,acc=1e-9) {
+  
+  r <- length(lambda)
+  if (length(h) != r) stop("lambda and h should have the same length!")
+  if (length(delta) != r) stop("lambda and delta should have the same length!")
+  
+  out <- .C("qfc",lambdas=as.double(lambda),noncentral=as.double(delta),df=as.integer(h),r=as.integer(r),sigma=as.double(sigma),q=as.double(q),lim=as.integer(lim),acc=as.double(acc),trace=as.double(rep(0,7)),ifault=as.integer(0),res=as.double(0),PACKAGE="SKAT")
+  
+  out$res <- 1 - out$res
+  
+  return(list(trace=out$trace,ifault=out$ifault,Qq=out$res))
+  
+}
 
