@@ -7,7 +7,7 @@
 #' @return The p value for meta-analysis.
 #' @export
 #'
-meta_iQRAT <- function(pval.list){
+meta_fisher <- function(pval.list){
   nstudy = length(pval.list)
   if(is.vector((pval.list[[1]]))){
     mattemp = rep(0, length(pval.list[[1]]))
@@ -34,6 +34,8 @@ meta_iQRAT <- function(pval.list){
   pval_meta = pchisq( mattemp, df = 2*nstudy, lower.tail = FALSE)
 
 
+  return(pval_meta)
+}
   return(pval_meta)
 }
 
