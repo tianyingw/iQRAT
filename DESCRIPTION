@@ -3,7 +3,7 @@ Type: Package
 Title: Integrated Quantile RAnk Test
 Version: 5.0
 Author: Tianying Wang
-Maintainer: Tianying Wang <tw2696@cumc.columbia.edu>
+Maintainer: Tianying Wang <tianyingw0905@outlook.edu.cn>
 Description: This package provides tools for testing heterogeneous group-wise association via quantile rank test.
 License: GPL (>=2)
 Imports: quantreg, SKAT, stats
