@@ -21,6 +21,7 @@ Suppose you have a sample dataset stored in a list with Y = SampleData$y, covria
 ``` r
 library(quantreg)
 library(SKAT)
+library(iQRAT)
 data("SampleData")
 
 # Step 1: fit null model
