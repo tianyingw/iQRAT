@@ -36,7 +36,5 @@ meta_fisher <- function(pval.list){
 
   return(pval_meta)
 }
-  return(pval_meta)
-}
 
 
