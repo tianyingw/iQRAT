@@ -1,10 +1,4 @@
-#' Function for meta-analysis using Fisher's method
-#'
-#' This funciton uses Fisher's method to combine a list of independent p values and return the p value for mets-analysis.
-#'
-#' @param pval.list A list of independent p values. Each element is a vector with same length.
-#'
-#' @return The p value for meta-analysis.
+#' Meta analysis: Fisher's test
 #' @export
 #'
 meta_fisher <- function(pval.list){
@@ -36,5 +30,3 @@ meta_fisher <- function(pval.list){
 
   return(pval_meta)
 }
-
-

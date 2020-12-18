@@ -1,25 +1,21 @@
+
+rm(list=ls())
 library(quantreg)
 library(SKAT)
+data("SampleData")
 
-error_id = 1
+# Step 1: fit null model
+null.fit = Null_model(Y = SampleData$y, C = SampleData$c)
+# Step 2: run the test, p value will return
 
-n= 500
-pnum = 70
-beta_star = 0.3
-gamma_star = 0.1
+# SKAT version iQRAT
+test.iQRAT1 = iQRAT(X = SampleData$x, C = SampleData$c, v =  null.fit, method.type = "S")
 
-causalrare = 0.3
-causalcommon = 0.2
+# If you want to specify weights
+w = dbeta(colMeans(SampleData$x)/2,0.5,0.5) # we use beta density as an example
+test.iQRAT2 = iQRAT(X = SampleData$x, C = SampleData$c, v =  null.fit, method.type = "S", w = w)
 
-# select region
-
-
-data("SKAT.haplotypes")
-Data = GenerateTestData(error_id, n, pnum, beta_star, gamma_star,
-                        causalrare, causalcommon, SKAT.haplotypes)
-
-iQRAT(Data$y_a, Data$x, Data$c)
-
-
+# Burden version iQRAT
+test.iQRAT3 = iQRAT(X = SampleData$x, C = SampleData$c, v =  null.fit, method.type = "B")
 
 

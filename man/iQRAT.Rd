@@ -4,20 +4,40 @@
 \alias{iQRAT}
 \title{Integrated Quantile Rank Test for group-wise joint effect of rare and common variants in sequencing study}
 \usage{
-iQRAT(Y, X, C, cutoff = NULL, weight = TRUE, method.type = "S")
+iQRAT(
+  X,
+  C,
+  v,
+  cutoff = NULL,
+  weight = TRUE,
+  method.type = "S",
+  w = NULL,
+  SingleScore = NULL,
+  RareOnly = FALSE,
+  w.dbeta = NULL,
+  acc = 1e-09
+)
 }
 \arguments{
-\item{Y}{A vector of response, size \eqn{n}.}
-
 \item{X}{A n by p matrix of genotype.}
 
 \item{C}{A vector or matrix of covariates.}
 
+\item{v}{Null model fitted based on quantile process.}
+
 \item{cutoff}{A number for separating common and rare variants. If not assigned, the default cutoff is \eqn{1/\sqrt(2*n)}.}
 
-\item{weight}{A logicalvariable indicating if different weights will be assigned to common and rare variants. The default is TRUE.}
+\item{weight}{A logical variable indicating if different weights will be assigned to common and rare variants. The default is TRUE.}
 
 \item{method.type}{A character, either "S" for \eqn{Q_S} or "B" for \eqn{Q_B}.}
+
+\item{w}{A vector with length p. It could be functional annotation or other user-specified weights for variants. If w is NULL, the default beta density weight will apply.}
+
+\item{SingleScore}{Either "Wilcoxon", "Normal", "Lehmann" or "InverseLehmann" if you want to use only one weight function; otherwise, "NULL" represents a combination of four weight functions will be used.}
+
+\item{RareOnly}{A logical variable indicating if only consider rare variants effect. The default is FALSE. Once RareOnly is set to be TRUE, the cutoff value will be ignored.}
+
+\item{w.dbeta}{Two parameters for the beta density. The default value is NULL.}
 }
 \value{
 A list contains p value, case and method type. Case indicates whether \code{X} is common, rare or mix.
@@ -30,33 +50,30 @@ is required for data pre-processing. Note that when applying to univariate, no w
 }
 \section{References}{
 
-Wang, T., Ionita-Laza, I. and Wei, Y. Efficient Quantile Rank Test for heterogeneous joint effect of rare and common variants in sequencing studies.
+Wang, T., Ionita-Laza, I. and Wei, Y. Integrated Quantile RAnk Test (iQRAT) for gene-level associations.
+Seunggeun Lee and with contributions from Larisa Miropolsky and Michael Wu.(2017) SKAT: SNP-Set (Sequence) Kernel Association Test.
 }
 
 \examples{
+
+rm(list=ls())
 library(quantreg)
 library(SKAT)
+data("SampleData")
 
-error_id = 1
+# Step 1: fit null model
+null.fit = Null_model(Y = SampleData$y, C = SampleData$c)
+# Step 2: run the test, p value will return
 
-n= 500
-pnum = 70
-beta_star = 0.3
-gamma_star = 0.1
+# SKAT version iQRAT
+test.iQRAT1 = iQRAT(X = SampleData$x, C = SampleData$c, v =  null.fit, method.type = "S")
 
-causalrare = 0.3
-causalcommon = 0.2
+# If you want to specify weights
+w = dbeta(colMeans(SampleData$x)/2,0.5,0.5) # we use beta density as an example
+test.iQRAT2 = iQRAT(X = SampleData$x, C = SampleData$c, v =  null.fit, method.type = "S", w = w)
 
-# select region
-
-
-data("SKAT.haplotypes")
-Data = GenerateTestData(error_id, n, pnum, beta_star, gamma_star,
-                        causalrare, causalcommon, SKAT.haplotypes)
-
-iQRAT(Data$y_a, Data$x, Data$c)
-
-
+# Burden version iQRAT
+test.iQRAT3 = iQRAT(X = SampleData$x, C = SampleData$c, v =  null.fit, method.type = "B")
 
 
 }

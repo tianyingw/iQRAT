@@ -8,11 +8,11 @@
 #' @export
 #'
 Null_model <- function(Y,C){
-  
 
-   null.fit =rq(Y~C, tau = -1)
-   
-  
-  
+
+    null.fit = rq(Y~C, tau = -1)
+
+
+
   return(null.fit)
 }
